@@ -1,12 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<title>Leaflet Draw</title>
 	<link rel="stylesheet" type="text/css" href="lib/leaflet.css">
 	<link rel="stylesheet" type="text/css" href="lib/leaflet.draw.css">
 </head>
+<style>
+	   #delete, #export {
+            position: absolute;
+            top:50px;
+            right:10px;
+            z-index:100;
+            background:white;
+            color:black;
+            padding:6px;
+            border-radius:4px;
+            font-family: 'Helvetica Neue';
+            cursor: pointer;
+            font-size:20px;
+            text-decoration:none;
+			z-index: 1000;
+			width: 10%;
+			height: 10%;
+        }
+        #export {
+            top:90px;
+        }
+</style>
 <body>
-	<div id="map", style="width: 600px; height: 400px"></div>
+	<div id="map", style="width: 200vw; height:200vh"></div>
+	<div id='delete'>Delete Features</div>
+    <a href='#' id='export'>Export Features</a>
 
 	<script type="text/javascript" src="lib/leaflet.js"></script>
 
@@ -58,9 +83,26 @@
       map.on('draw:created', function (e) {
             var type = e.layerType,
                 layer = e.layer;
+
             drawnItems.addLayer(layer);
         });
 
+
+		document.getElementById('delete').onclick = function(e) {
+            drawnItems.clearLayers();
+        }
+
+        document.getElementById('export').onclick = function(e) {
+            // Extract GeoJson from featureGroup
+            var data = drawnItems.toGeoJSON();
+
+            // Stringify the GeoJson
+            var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
+
+            // Create export
+            document.getElementById('export').setAttribute('href', 'data:' + convertedData);
+            document.getElementById('export').setAttribute('download','data.geojson');
+        }
      
 	</script>
 
