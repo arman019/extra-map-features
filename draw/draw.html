@@ -1,92 +1,126 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<title>Leaflet Draw</title>
+	<title>Custom map Draw</title>
 	<link rel="stylesheet" type="text/css" href="lib/leaflet.css">
 	<link rel="stylesheet" type="text/css" href="lib/leaflet.draw.css">
 </head>
 <style>
-	   #delete, #export {
-            position: absolute;
-            top:50px;
-            right:10px;
-            z-index:100;
-            background:white;
-            color:black;
-            padding:6px;
-            border-radius:4px;
-            font-family: 'Helvetica Neue';
-            cursor: pointer;
-            font-size:22px;
-            text-decoration:none;
-			z-index: 1000;
-			width: 10%;
-			height: 4%;
-        }
-        #export {
-            top:90px;
-        }
+	#delete,
+	#export {
+		position: absolute;
+		top: 50px;
+		right: 10px;
+		z-index: 100;
+		background: white;
+		color: black;
+		padding: 6px;
+		border-radius: 4px;
+		font-family: 'Helvetica Neue';
+		cursor: pointer;
+		font-size: 22px;
+		text-decoration: none;
+		z-index: 1000;
+		width: 10%;
+		height: 4%;
+	}
+	#export {
+		top: 90px;
+	}
 </style>
 <body>
-	<div id="map", style="width: 200vw; height:200vh"></div>
+	<div id="map" , style="width: 200vw; height:200vh"></div>
 	<div id='delete'>Delete Features</div>
-    <a href='#' id='export'>Export Features</a>
+	<a href='#' id='export'>Export Features</a>
 
 	<script type="text/javascript" src="lib/leaflet.js"></script>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
 	<script src="/draw/data/saved_data.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
 
 
 	<script>
-		  var map = L.map('map').setView([51.505, -0.09], 13);
-     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-     }).addTo(map);
+		var map = L.map('map').setView([51.505, -0.09], 13);
+		L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+		}).addTo(map);
 
-       var drawnItems = new L.FeatureGroup();
-     map.addLayer(drawnItems);
-     var drawControl = new L.Control.Draw({
-     	// position: 'topright',
-		     	draw: {
-		    polygon: {
-		     shapeOptions: {
-		      color: 'purple'
-		     },
-		     allowIntersection: false,
-		     drawError: {
-		      color: 'orange',
-		      timeout: 1000
-		     },
-		    },
-		    polyline: {
-		     shapeOptions: {
-		      color: 'red'
-		     },
-		    },
-		    rect: {
-		     shapeOptions: {
-		      color: 'green'
-		     },
-		    },
-		    circle: {
-		     shapeOptions: {
-		      color: 'steelblue'
-		     },
-		    },
-		   },
-         edit: {
-             featureGroup: drawnItems
-         }
-     });
-     	map.addControl(drawControl);
+		var drawnItems = new L.FeatureGroup();
+		map.addLayer(drawnItems);
+		var drawControl = new L.Control.Draw({
+			// position: 'topright',
+			draw: {
+				polygon: {
+					shapeOptions: {
+						color: 'purple'
+					},
+					allowIntersection: false,
+					drawError: {
+						color: 'orange',
+						timeout: 1000
+					},
+				},
+				polyline: {
+					shapeOptions: {
+						color: 'red'
+					},
+				},
+				rect: {
+					shapeOptions: {
+						color: 'green'
+					},
+				},
+				circle: {
+					shapeOptions: {
+						color: 'steelblue'
+					},
+				},
+			},
+			edit: {
+				featureGroup: drawnItems
+			}
+		});
+		map.addControl(drawControl);
 		map.on('draw:created', function (e) {
 			var type = e.layerType,
 				layer = e.layer;
 
 			drawnItems.addLayer(layer);
 		});
+		// console.log('savedData ',savedData['features'][0]['geometry']['coordinates']);
+			console.log('savedData ', savedData['features']);
+			var count=0;
+			var lineData='';
+			var polyGonData='';
+			var addToMapData=[];
+
+			savedData['features'].forEach(data => {
+					console.log('data ', data['geometry']['coordinates']);
+					lineData = turf.lineString(data['geometry']['coordinates']);
+					polyGonData = turf.lineToPolygon(lineData);
+					addToMapData = [polyGonData];
+					console.log(addToMapData);
+					savedData['features'][count] = addToMapData[0];
+
+					lineData = '';
+					polyGonData = '';
+					addToMapData = [];
+					count++;
+
+				});
+				// Main code
+			/* var line = turf.lineString(savedData['features'][0]['geometry']['coordinates']);
+
+			var polygon = turf.lineToPolygon(line);
+
+			//addToMap
+			var addToMap = [polygon];
+			console.log('addToMap ', addToMap[0]);
+			savedData['features'][0] = addToMap[0]; */
+
 
 		var linedata = L.geoJSON(savedData, {
 			style: function () {
@@ -163,28 +197,29 @@
 
 		}).addTo(map);
 		function zoomToFeature(e) {
-        map.fitBounds(e.target.getBounds());
-       
-    }
+			map.fitBounds(e.target.getBounds());
 
-		document.getElementById('delete').onclick = function(e) {
-            drawnItems.clearLayers();
-        }
+		}
 
-        document.getElementById('export').onclick = function(e) {
-            // Extract GeoJson from featureGroup
-            var data = drawnItems.toGeoJSON();
+		document.getElementById('delete').onclick = function (e) {
+			drawnItems.clearLayers();
+		}
 
-            // Stringify the GeoJson
-            var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
+		document.getElementById('export').onclick = function (e) {
+			// Extract GeoJson from featureGroup
+			var data = drawnItems.toGeoJSON();
 
-            // Create export
-            document.getElementById('export').setAttribute('href', 'data:' + convertedData);
-            document.getElementById('export').setAttribute('download','data.geojson');
-        }
-     
+			// Stringify the GeoJson
+			var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
+
+			// Create export
+			document.getElementById('export').setAttribute('href', 'data:' + convertedData);
+			document.getElementById('export').setAttribute('download', 'data.geojson');
+		}
+
 	</script>
 
 
 </body>
+
 </html>
