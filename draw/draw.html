@@ -18,11 +18,11 @@
             border-radius:4px;
             font-family: 'Helvetica Neue';
             cursor: pointer;
-            font-size:20px;
+            font-size:22px;
             text-decoration:none;
 			z-index: 1000;
 			width: 10%;
-			height: 10%;
+			height: 4%;
         }
         #export {
             top:90px;
@@ -36,6 +36,7 @@
 	<script type="text/javascript" src="lib/leaflet.js"></script>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
+	<script src="/draw/data/saved_data.js"></script>
 
 
 	<script>
@@ -79,14 +80,92 @@
              featureGroup: drawnItems
          }
      });
-     map.addControl(drawControl);
-      map.on('draw:created', function (e) {
-            var type = e.layerType,
-                layer = e.layer;
+     	map.addControl(drawControl);
+		map.on('draw:created', function (e) {
+			var type = e.layerType,
+				layer = e.layer;
 
-            drawnItems.addLayer(layer);
-        });
+			drawnItems.addLayer(layer);
+		});
 
+		var linedata = L.geoJSON(savedData, {
+			style: function () {
+				return {
+					color: 'yellow',
+				}
+			},
+			onEachFeature: function (feature, layer) {
+				layer.on({
+					click: zoomToFeature
+				});
+
+				if (feature.properties.hasOwnProperty('TextString')) {
+					layer.bindPopup('<b>Dag </b>' + feature.properties.TextString)
+					if ((feature.properties.TextString).trim() == 435) {
+						map.setView([layer._bounds._northEast.lat, layer._bounds._northEast.lng], 20);
+						layer.setStyle(
+							{
+								fillColor: 'blue',
+								fillOpacity: 4,
+								color: 'blue',
+							}
+						);
+
+					}
+
+				}
+
+				coords = feature.geometry.coordinates;
+				first = coords[0];
+				last = coords[coords.length - 1];
+
+				if (feature.geometry.type === "LineString" && first[0] === last[0] && first[1] === last[1]) {
+					layer.setStyle(
+						{
+							fillColor: 'black',
+							fillOpacity: 4,
+							color: 'black',
+						}
+					);
+
+				}
+
+
+				layer.on('click', function () {
+					// console.log(this);
+					this.setStyle({
+						weight: 5,
+						// color: '#666',
+						color: 'white',
+						dashArray: '',
+						fillOpacity: 1,
+						fillColor: '#FED976'
+					});
+				});
+				layer.on('mouseout', function (e) {
+					if (feature.properties.hasOwnProperty('TextString') && (this.feature.properties.TextString).trim() == 440) {
+						layer.setStyle(
+							{
+								fillColor: 'blue',
+								fillOpacity: 4,
+								color: 'blue',
+							}
+						);
+
+					} else {
+						linedata.resetStyle(this);
+
+					}
+				});
+
+			},
+
+
+		}).addTo(map);
+		function zoomToFeature(e) {
+        map.fitBounds(e.target.getBounds());
+       
+    }
 
 		document.getElementById('delete').onclick = function(e) {
             drawnItems.clearLayers();
