@@ -29,6 +29,13 @@
 	#export {
 		top: 90px;
 	}
+
+	.text-labels {
+            font-size: 2em;
+            font-weight: 700;
+            color: red;
+            /* Use color, background, set margins for offset, etc */
+        }
 </style>
 <body>
 	<div id="map" , style="width: 200vw; height:200vh"></div>
@@ -43,6 +50,7 @@
 
 
 	<script>
+
 		var map = L.map('map').setView([51.505, -0.09], 13);
 		L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -132,7 +140,15 @@
 				layer.on({
 					click: zoomToFeature
 				});
+				// console.log('lat ',map.getBounds()['_northEast']['lat'],' lang ',map.getBounds()['_southWest']['lng']);
+				
+				var bbox=L.latLngBounds(feature.geometry.coordinates.map((c) => {
+					return [c[1], c[0]];
+				}));
+				// console.log(' bbox ',bbox);
 
+				setCustomMarker(bbox['_northEast']['lat'],bbox['_southWest']['lng']);
+				
 				if (feature.properties.hasOwnProperty('TextString')) {
 					layer.bindPopup('<b>Dag </b>' + feature.properties.TextString)
 					if ((feature.properties.TextString).trim() == 435) {
@@ -152,17 +168,6 @@
 				coords = feature.geometry.coordinates;
 				first = coords[0];
 				last = coords[coords.length - 1];
-
-				if (feature.geometry.type === "LineString" && first[0] === last[0] && first[1] === last[1]) {
-					layer.setStyle(
-						{
-							fillColor: 'black',
-							fillOpacity: 4,
-							color: 'black',
-						}
-					);
-
-				}
 
 
 				layer.on('click', function () {
@@ -193,9 +198,20 @@
 				});
 
 			},
-
-
+					
 		}).addTo(map);
+
+		function setCustomMarker (lat,lng) {  
+			// console.log('lat in ',lat,'lng in',lng);
+			var myTextLabel = L.marker([lng,lat], {
+				icon: L.divIcon({
+					className: 'text-labels',   // Set class for CSS styling
+					html: 'A Text Label'
+				}),
+				zIndexOffset: 1000     // Make appear above other map features
+			}).addTo(map);
+		}
+		
 		function zoomToFeature(e) {
 			map.fitBounds(e.target.getBounds());
 
