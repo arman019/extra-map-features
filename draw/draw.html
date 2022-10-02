@@ -26,8 +26,26 @@
 		width: 10%;
 		height: 4%;
 	}
-	#export {
+	#export{
 		top: 90px;
+	}
+	
+	#save_changes{
+		position: absolute;
+		top: 140px;
+		right: 10px;
+		z-index: 100;
+		background: white;
+		color: black;
+		padding: 6px;
+		border-radius: 4px;
+		font-family: 'Helvetica Neue';
+		cursor: pointer;
+		font-size: 22px;
+		text-decoration: none;
+		z-index: 1000;
+		width: 10%;
+		height: 4%;
 	}
 
 	.text-labels {
@@ -40,7 +58,8 @@
 <body>
 	<div id="map" , style="width: 200vw; height:200vh"></div>
 	<div id='delete'>Delete Features</div>
-	<a href='#' id='export'>Export Features</a>
+	<a href='#' id='export'>Save Features</a>
+	<a href='#' id='save_changes'>Save Dag information</a>
 
 	<script type="text/javascript" src="lib/leaflet.js"></script>
 
@@ -53,6 +72,7 @@
 
 		var map = L.map('map').setView([51.505, -0.09], 13);
 		L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+			maxZoom: 15,
 			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map);
 
@@ -128,8 +148,8 @@
 			var addToMap = [polygon];
 			console.log('addToMap ', addToMap[0]);
 			savedData['features'][0] = addToMap[0]; */
-
-
+			
+		
 		var linedata = L.geoJSON(savedData, {
 			style: function () {
 				return {
@@ -145,9 +165,13 @@
 				var bbox=L.latLngBounds(feature.geometry.coordinates.map((c) => {
 					return [c[1], c[0]];
 				}));
-				// console.log(' bbox ',bbox);
+				
+				// var center = layer.getBounds().getCenter();
 
-				setCustomMarker(bbox['_northEast']['lat'],bbox['_southWest']['lng']);
+				console.log(' bbox ',bbox,' center ',center);
+
+				// setCustomMarker(bbox['_northEast']['lat'],bbox['_southWest']['lng']);
+				// setCustomMarker(center['lng'],center['lat']);
 				
 				if (feature.properties.hasOwnProperty('TextString')) {
 					layer.bindPopup('<b>Dag </b>' + feature.properties.TextString)
@@ -171,7 +195,9 @@
 
 
 				layer.on('click', function () {
-					// console.log(this);
+					
+					console.log('this ',this.feature.properties,' feature ',feature);
+					// feature.properties.cena=this.feature.??'';
 					this.setStyle({
 						weight: 5,
 						// color: '#666',
@@ -197,6 +223,8 @@
 					}
 				});
 
+				addPopup(layer);
+
 			},
 					
 		}).addTo(map);
@@ -205,10 +233,10 @@
 			// console.log('lat in ',lat,'lng in',lng);
 			var myTextLabel = L.marker([lng,lat], {
 				icon: L.divIcon({
-					className: 'text-labels',   // Set class for CSS styling
+					className: 'text-labels',   
 					html: 'A Text Label'
 				}),
-				zIndexOffset: 1000     // Make appear above other map features
+				zIndexOffset: 1000     
 			}).addTo(map);
 		}
 		
@@ -224,8 +252,7 @@
 		document.getElementById('export').onclick = function (e) {
 			// Extract GeoJson from featureGroup
 			var data = drawnItems.toGeoJSON();
-			console.log('drawn data ',data);
-
+		
 			data['features'].forEach(draftData => {
 					// console.log('data ', data['geometry']['coordinates']);
 					lineData = turf.lineString(draftData['geometry']['coordinates']);
@@ -246,7 +273,64 @@
 			// Create export
 			document.getElementById('export').setAttribute('href', 'data:' + convertedData);
 			document.getElementById('export').setAttribute('download', 'data.geojson');
+			
 		}
+
+		document.getElementById('save_changes').onclick = function (e) {
+			// Extract GeoJson from featureGroup
+			console.log('linedata ',linedata);
+			console.log('savedData ',savedData);
+			var newSavedData=savedData;
+		
+			var convertedSavedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(newSavedData));
+			
+			document.getElementById('save_changes').setAttribute('href', 'data:' + convertedSavedData);
+			document.getElementById('save_changes').setAttribute('download', 'newSavedData.geojson');
+		}
+
+
+		/*  */
+
+		var openLayer;
+			function addPopup(layer) {
+				console.log('in layer ',layer);
+				let popupContent =
+					'<form>' +
+					'Dag no:<br><input type="text" id="input_dag"><br>' +
+					'Area:<br><input type="text" id="input_area"><br>' +
+					'</form>';
+
+				layer.bindPopup(popupContent);
+
+				layer.on("popupopen", function (e) {
+					var _layer = e.popup._source;
+					if (!_layer.feature) {
+						_layer.feature = {
+							properties: {}
+						};
+					}
+					document.getElementById("input_dag").value = _layer.feature.properties.dag || "";
+					document.getElementById("input_area").value = _layer.feature.properties.area || "";
+					document.getElementById("input_dag").focus();
+					openLayer = _layer;
+				});
+
+				layer.on("popupclose", function (e) {
+					openLayer = undefined;
+				})
+
+			};
+
+			L.DomEvent.on(document, "keyup", function () {
+				if (openLayer) {
+					dag = document.getElementById("input_dag").value;
+					area = document.getElementById("input_area").value;
+
+					openLayer.feature.properties.dag = dag;
+					openLayer.feature.properties.area = area;
+				}
+			})
+		/*  */
 
 	</script>
 
