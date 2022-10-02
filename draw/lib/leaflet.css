@@ -154,6 +154,7 @@
 	}
 .leaflet-left .leaflet-control {
 	margin-left: 10px;
+	zoom: 2;
 	}
 .leaflet-right .leaflet-control {
 	margin-right: 10px;
