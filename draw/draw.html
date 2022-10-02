@@ -92,9 +92,34 @@
 					},
 				},
 				polyline: {
+					icon: new L.DivIcon({
+						iconSize: new L.Point(8, 8),
+						className: 'leaflet-div-icon leaflet-editing-icon'
+					}),
 					shapeOptions: {
-						color: 'red'
+						color: 'red',
 					},
+					touchIcon: new L.DivIcon({
+						iconSize: new L.Point(20, 20),
+						className: 'leaflet-div-icon leaflet-editing-icon leaflet-touch-icon'
+					}),
+					guidelineDistance: 20,
+					maxGuideLineLength: 4000,
+					shapeOptions: {
+						stroke: true,
+						color: 'red',
+						weight: 4,
+						opacity: 0.5,
+						fill: false,
+						clickable: true
+					},
+					metric: true, // Whether to use the metric measurement system or imperial
+					feet: true, // When not metric, to use feet instead of yards for display.
+					nautic: false, // When not metric, not feet use nautic mile for display
+					showLength: true, // Whether to display distance in the tooltip
+					zIndexOffset: 2000, // This should be > than the highest z-index any map layers
+					factor: 1, // To change distance calculation
+					maxPoints: 0 // Once this number of points are placed, finish shape
 				},
 				rect: {
 					shapeOptions: {
@@ -167,7 +192,7 @@
 				}));
 				
 				var center = layer.getBounds().getCenter();
-
+				
 				console.log(' bbox ',bbox,' center ',center);
 
 				// setCustomMarker(bbox['_northEast']['lat'],bbox['_southWest']['lng']);
@@ -187,7 +212,8 @@
 
 
 				layer.on('click', function () {
-					
+					console.log('layer.getLatLngs() ',layer.getLatLngs());
+					console.log(' area ',L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]));
 					console.log('this ',this.feature.properties,' feature ',feature);
 					// feature.properties.cena=this.feature.??'';
 					this.setStyle({
