@@ -171,23 +171,15 @@
 				console.log(' bbox ',bbox,' center ',center);
 
 				// setCustomMarker(bbox['_northEast']['lat'],bbox['_southWest']['lng']);
-				setCustomMarker(center['lng'],center['lat']);
+				// setCustomMarker(center['lng'],center['lat']);
 				
-				if (feature.properties.hasOwnProperty('TextString')) {
-					layer.bindPopup('<b>Dag </b>' + feature.properties.TextString)
-					if ((feature.properties.TextString).trim() == 435) {
-						map.setView([layer._bounds._northEast.lat, layer._bounds._northEast.lng], 20);
-						layer.setStyle(
-							{
-								fillColor: 'blue',
-								fillOpacity: 4,
-								color: 'blue',
-							}
-						);
 
-					}
+				if (feature.properties.hasOwnProperty('dag') && typeof (feature.properties.dag)!=='undefind') {
+					console.log(' typeof (feature.properties.dag) ',typeof (feature.properties.dag));
+					setCustomMarker(center['lng'],center['lat'],feature.properties.dag);
 
 				}
+				
 
 				coords = feature.geometry.coordinates;
 				first = coords[0];
@@ -229,12 +221,12 @@
 					
 		}).addTo(map);
 
-		function setCustomMarker (lat,lng) {  
+		function setCustomMarker (lat,lng,content) {  
 			// console.log('lat in ',lat,'lng in',lng);
 			var myTextLabel = L.marker([lng,lat], {
 				icon: L.divIcon({
 					className: 'text-labels',   
-					html: 'A Text Label'
+					html: content
 				}),
 				zIndexOffset: 1000     
 			}).addTo(map);
