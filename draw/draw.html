@@ -91,18 +91,18 @@
 			drawnItems.addLayer(layer);
 		});
 		// console.log('savedData ',savedData['features'][0]['geometry']['coordinates']);
-			console.log('savedData ', savedData['features']);
+			// console.log('savedData ', savedData['features']);
 			var count=0;
 			var lineData='';
 			var polyGonData='';
 			var addToMapData=[];
 
-			savedData['features'].forEach(data => {
-					console.log('data ', data['geometry']['coordinates']);
+			/* savedData['features'].forEach(data => {
+					// console.log('data ', data['geometry']['coordinates']);
 					lineData = turf.lineString(data['geometry']['coordinates']);
 					polyGonData = turf.lineToPolygon(lineData);
 					addToMapData = [polyGonData];
-					console.log(addToMapData);
+					// console.log(addToMapData);
 					savedData['features'][count] = addToMapData[0];
 
 					lineData = '';
@@ -110,7 +110,7 @@
 					addToMapData = [];
 					count++;
 
-				});
+				}); */
 				// Main code
 			/* var line = turf.lineString(savedData['features'][0]['geometry']['coordinates']);
 
@@ -208,7 +208,22 @@
 		document.getElementById('export').onclick = function (e) {
 			// Extract GeoJson from featureGroup
 			var data = drawnItems.toGeoJSON();
+			console.log('drawn data ',data);
 
+			data['features'].forEach(draftData => {
+					// console.log('data ', data['geometry']['coordinates']);
+					lineData = turf.lineString(draftData['geometry']['coordinates']);
+					polyGonData = turf.lineToPolygon(lineData);
+					addToMapData = [polyGonData];
+					// console.log(addToMapData);
+					data['features'][count] = addToMapData[0];
+
+					lineData = '';
+					polyGonData = '';
+					addToMapData = [];
+					count++;
+
+				});
 			// Stringify the GeoJson
 			var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
 
