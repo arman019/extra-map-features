@@ -166,12 +166,12 @@
 					return [c[1], c[0]];
 				}));
 				
-				// var center = layer.getBounds().getCenter();
+				var center = layer.getBounds().getCenter();
 
 				console.log(' bbox ',bbox,' center ',center);
 
 				// setCustomMarker(bbox['_northEast']['lat'],bbox['_southWest']['lng']);
-				// setCustomMarker(center['lng'],center['lat']);
+				setCustomMarker(center['lng'],center['lat']);
 				
 				if (feature.properties.hasOwnProperty('TextString')) {
 					layer.bindPopup('<b>Dag </b>' + feature.properties.TextString)
