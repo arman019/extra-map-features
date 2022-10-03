@@ -72,7 +72,7 @@
 
 		var map = L.map('map').setView([51.505, -0.09], 13);
 		L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-			maxZoom: 15,
+			maxZoom: 19,
 			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map);
 
@@ -85,7 +85,7 @@
 					shapeOptions: {
 						color: 'purple'
 					},
-					allowIntersection: false,
+					// allowIntersection: false,
 					drawError: {
 						color: 'orange',
 						timeout: 1000
@@ -270,8 +270,28 @@
 		document.getElementById('export').onclick = function (e) {
 			// Extract GeoJson from featureGroup
 			var data = drawnItems.toGeoJSON();
-		
+			console.log('draw data ',data);
 			data['features'].forEach(draftData => {
+					console.log('data ', draftData['geometry']['type']);
+					if(draftData['geometry']['type'] ==='Polygon'){
+						console.log('data is polygon ', draftData['geometry']);
+					}else if(draftData['geometry']['type'] ==='LineString'){
+						console.log('data is line  ', draftData['geometry']);
+						lineData = turf.lineString(draftData['geometry']['coordinates']);
+						polyGonData = turf.lineToPolygon(lineData);
+						addToMapData = [polyGonData];
+						// console.log(addToMapData);
+						data['features'][count] = addToMapData[0];
+
+						lineData = '';
+						polyGonData = '';
+						addToMapData = [];
+						count++;
+					}
+					
+
+				});
+			/* data['features'].forEach(draftData => {
 					// console.log('data ', data['geometry']['coordinates']);
 					lineData = turf.lineString(draftData['geometry']['coordinates']);
 					polyGonData = turf.lineToPolygon(lineData);
@@ -284,7 +304,7 @@
 					addToMapData = [];
 					count++;
 
-				});
+				}); */
 			// Stringify the GeoJson
 			var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
 
