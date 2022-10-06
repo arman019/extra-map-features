@@ -193,14 +193,14 @@
 				
 				var center = layer.getBounds().getCenter();
 				
-				console.log(' bbox ',bbox,' center ',center);
+				// console.log(' bbox ',bbox,' center ',center);
 
 				// setCustomMarker(bbox['_northEast']['lat'],bbox['_southWest']['lng']);
 				// setCustomMarker(center['lng'],center['lat']);
 				
 
 				if (feature.properties.hasOwnProperty('dag') && typeof (feature.properties.dag)!=='undefind') {
-					console.log(' typeof (feature.properties.dag) ',typeof (feature.properties.dag));
+					// console.log(' typeof (feature.properties.dag) ',typeof (feature.properties.dag));
 					setCustomMarker(center['lng'],center['lat'],feature.properties.dag);
 
 				}
@@ -212,9 +212,10 @@
 
 
 				layer.on('click', function () {
-					console.log('layer.getLatLngs() ',layer.getLatLngs());
+				
+					/* console.log('layer.getLatLngs() ',layer.getLatLngs());
 					console.log(' area ',L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]));
-					console.log('this ',this.feature.properties,' feature ',feature);
+					console.log('this ',this.feature.properties,' feature ',feature); */
 					// feature.properties.cena=this.feature.??'';
 					this.setStyle({
 						weight: 5,
@@ -316,8 +317,8 @@
 
 		document.getElementById('save_changes').onclick = function (e) {
 			// Extract GeoJson from featureGroup
-			console.log('linedata ',linedata);
-			console.log('savedData ',savedData);
+			/* console.log('linedata ',linedata);
+			console.log('savedData ',savedData); */
 			var newSavedData=savedData;
 		
 			var convertedSavedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(newSavedData));
@@ -331,7 +332,7 @@
 
 		var openLayer;
 			function addPopup(layer) {
-				console.log('in layer ',layer);
+				// console.log('in layer ',layer);
 				let popupContent =
 					'<form>' +
 					'Dag no:<br><input type="text" id="input_dag"><br>' +
