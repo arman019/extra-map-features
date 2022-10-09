@@ -180,6 +180,11 @@
 				layer = e.layer;
 
 			drawnItems.addLayer(layer);
+			if(type !=='polyline' && type !=='circle'){
+
+				layer.bindPopup('area meter: ' + L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]) + ' Area  acre: ' + L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]) * 0.000247105).openPopup();
+			}
+			
 		});
 		// console.log('savedData ',savedData['features'][0]['geometry']['coordinates']);
 		// console.log('savedData ', savedData['features']);
