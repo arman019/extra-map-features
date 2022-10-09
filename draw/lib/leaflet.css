@@ -154,7 +154,7 @@
 	}
 .leaflet-left .leaflet-control {
 	margin-left: 10px;
-	zoom: 2;
+	/* zoom: 2; */
 	}
 .leaflet-right .leaflet-control {
 	margin-right: 10px;
@@ -472,7 +472,7 @@
 .leaflet-popup-content {
 	margin: 13px 19px;
 	line-height: 1.4;
-	zoom: 2;
+	/* zoom: 2; */
 	}
 .leaflet-popup-content p {
 	margin: 18px 0;

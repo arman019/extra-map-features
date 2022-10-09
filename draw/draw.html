@@ -20,19 +20,19 @@
 		border-radius: 4px;
 		font-family: 'Helvetica Neue';
 		cursor: pointer;
-		font-size: 22px;
+		/* font-size: 22px; */
 		text-decoration: none;
 		z-index: 1000;
-		width: 10%;
+		width: 12%;
 		height: 4%;
 	}
 	#export{
-		top: 90px;
+		top: 88px;
 	}
 	
 	#save_changes{
 		position: absolute;
-		top: 140px;
+		top: 125px;
 		right: 10px;
 		z-index: 100;
 		background: white;
@@ -41,15 +41,15 @@
 		border-radius: 4px;
 		font-family: 'Helvetica Neue';
 		cursor: pointer;
-		font-size: 22px;
+		/* font-size: 22px; */
 		text-decoration: none;
 		z-index: 1000;
-		width: 10%;
+		width: 12%;
 		height: 4%;
 	}
 
 	.text-labels {
-            font-size: 2em;
+            font-size: 0.5rem;
             font-weight: 700;
             color: red;
             /* Use color, background, set margins for offset, etc */
@@ -57,24 +57,40 @@
 </style>
 <body>
 	<div id="map" , style="width: 200vw; height:200vh"></div>
-	<div id='delete'>Delete Features</div>
-	<a href='#' id='export'>Save Features</a>
-	<a href='#' id='save_changes'>Save Dag information</a>
+		<div id='delete'>Delete Features</div>
+		<a href='#' id='export'>Save Features</a>
+		<a href='#' id='save_changes'>Save Dag information</a>
 
 	<script type="text/javascript" src="lib/leaflet.js"></script>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
 	<script src="/draw/data/saved_data.js"></script>
+	<script src="/draw/data/nokhali_data.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
-
 
 	<script>
 
-		var map = L.map('map').setView([51.505, -0.09], 13);
+		var map = L.map('map').setView([22.61930278145982,91.49742490381592],13);
 		L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-			maxZoom: 19,
+			maxZoom: 17,
 			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map);
+
+		/* adding image part */
+			
+
+			/* var imageUrl = './img/raw_image_png.png';
+			var errorOverlayUrl = 'https://cdn-icons-png.flaticon.com/512/110/110686.png';
+			var altText = 'Image of Newark, N.J. in 1922. Source: The University of Texas at Austin, UT Libraries Map Collection.';
+			var latLngBounds = L.latLngBounds([[22.71579992100004, 91.28839667900007], [22.705118411000058, 91.29540041800004]]);
+
+			var imageOverlay = L.imageOverlay(imageUrl, latLngBounds, {
+				opacity: 0.8,
+				errorOverlayUrl: errorOverlayUrl,
+				alt: altText,
+				interactive: true
+			}).addTo(map); */
+		/*  */
 
 		var drawnItems = new L.FeatureGroup();
 		map.addLayer(drawnItems);
@@ -83,7 +99,9 @@
 			draw: {
 				polygon: {
 					shapeOptions: {
-						color: 'purple'
+						color: 'purple',
+						weight: 2,
+						opacity: 0.5,
 					},
 					// allowIntersection: false,
 					drawError: {
@@ -108,7 +126,7 @@
 					shapeOptions: {
 						stroke: true,
 						color: 'red',
-						weight: 4,
+						weight: 2,
 						opacity: 0.5,
 						fill: false,
 						clickable: true
@@ -175,7 +193,7 @@
 			savedData['features'][0] = addToMap[0]; */
 			
 		
-		var linedata = L.geoJSON(savedData, {
+		var linedata = L.geoJSON(noakhaliData, {
 			style: function () {
 				return {
 					color: 'yellow',
@@ -192,7 +210,7 @@
 				}));
 				
 				var center = layer.getBounds().getCenter();
-				
+			
 				// console.log(' bbox ',bbox,' center ',center);
 
 				// setCustomMarker(bbox['_northEast']['lat'],bbox['_southWest']['lng']);
@@ -211,12 +229,35 @@
 				last = coords[coords.length - 1];
 
 
-				layer.on('click', function () {
-				
+				layer.on('click', function (e) {
+					console.log(' area ',L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]),' bounds ',layer.getBounds());
+					// console.log('center ',(layer.getBounds()['_northEast']['lat']+layer.getBounds()['_southWest']['lat']));
 					/* console.log('layer.getLatLngs() ',layer.getLatLngs());
-					console.log(' area ',L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]));
+					
 					console.log('this ',this.feature.properties,' feature ',feature); */
 					// feature.properties.cena=this.feature.??'';
+					/* var labelDataClick=document.getElementsByClassName("text-labels");
+					let zoomDataClick=map.getZoom();
+					console.log('typeof ',labelDataClick.length);
+					console.log("zoom", map.getZoom())
+					for (let i = 0; i < labelDataClick.length; i++) {
+						let elementClick = labelDataClick[i];
+						if(zoomDataClick<13){
+							elementClick.style['fontSize']='2px';
+						}else if(zoomDataClick>=13){
+							if(zoomDataClick>15 && zoomDataClick<18){
+								elementClick.style['fontSize']='1.2em';
+							}else{
+								elementClick.style['fontSize']='2em';
+							}
+						
+						}
+						
+						console.log('ele ',elementClick.style);
+						
+					} */
+
+					
 					this.setStyle({
 						weight: 5,
 						// color: '#666',
@@ -319,7 +360,7 @@
 			// Extract GeoJson from featureGroup
 			/* console.log('linedata ',linedata);
 			console.log('savedData ',savedData); */
-			var newSavedData=savedData;
+			var newSavedData=noakhaliData;
 		
 			var convertedSavedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(newSavedData));
 			
@@ -330,9 +371,8 @@
 
 		/*  */
 
-		var openLayer;
+			var openLayer;
 			function addPopup(layer) {
-				// console.log('in layer ',layer);
 				let popupContent =
 					'<form>' +
 					'Dag no:<br><input type="text" id="input_dag"><br>' +
@@ -369,6 +409,56 @@
 					openLayer.feature.properties.area = area;
 				}
 			})
+
+			var labelData;
+			L.DomEvent.on(map.getContainer(), "mousewheel", function (e) {
+				console.log('e.originalEvent.wheelDelta  ',e.wheelDelta);
+				if (e.wheelDelta) {
+					// console.log('style ',document.getElementsByClassName("text-labels")[0].style);
+					// zoomBalance()
+				} 
+			
+			});
+
+			L.DomEvent.on(map.getContainer(), "click", function (e) {
+				/* console.log('e.originalEvent.wheelDelta  ',e);
+				console.log("zoom", map.getZoom()) */
+				// zoomBalance()
+			
+			})
+			// console.log(document.getElementsByClassName('leaflet-control-zoom-in')[0]);
+			document.getElementsByClassName('leaflet-control-zoom-in')[0].addEventListener('click',(e)=>{
+				// zoomBalance()
+			})
+
+			document.getElementsByClassName('leaflet-control-zoom-out')[0].addEventListener('click',(e)=>{
+				// zoomBalance()
+			})
+
+			// setInterval(zoomBalance,1000);
+
+			function zoomBalance() {
+
+					 labelData=document.getElementsByClassName("text-labels");
+					let zoomData=map.getZoom();
+					console.log('typeof ',labelData.length);
+					console.log("zoom", map.getZoom())
+					for (let i = 0; i < labelData.length; i++) {
+						let element = labelData[i];
+						if(zoomData<=13){
+							element.style['fontSize']='2px';
+						}else if(zoomData>=14){
+							if(zoomData>=14 && zoomData<18){
+								element.style['fontSize']='1em';
+							}else{
+								element.style['fontSize']='2em';
+							}
+							// element.style['fontSize']='2em';
+						}
+						
+					}
+			  }
+			
 		/*  */
 
 	</script>
