@@ -6,6 +6,8 @@
 	<title>Custom map Draw</title>
 	<link rel="stylesheet" type="text/css" href="lib/leaflet.css">
 	<link rel="stylesheet" type="text/css" href="lib/leaflet.draw.css">
+	<link rel="stylesheet" type="text/css" href="lib/leaflet-measure.css">
+
 </head>
 <style>
 	#delete,
@@ -54,6 +56,9 @@
             color: red;
             /* Use color, background, set margins for offset, etc */
         }
+		.leaflet-right{
+			right: 1600px;
+		}
 </style>
 <body>
 	<div id="map" , style="width: 200vw; height:200vh"></div>
@@ -62,20 +67,25 @@
 		<a href='#' id='save_changes'>Save Dag information</a>
 
 	<script type="text/javascript" src="lib/leaflet.js"></script>
+	<script src="./lib/leaflet-measure.js"></script>
 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script> -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js" integrity="sha512-ozq8xQKq6urvuU6jNgkfqAmT7jKN2XumbrX1JiB3TnF7tI48DPI4Gy1GXKD/V3EExgAs1V+pRO7vwtS1LHg0Gw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="/draw/data/saved_data.js"></script>
 	<script src="/draw/data/nokhali_data.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
 
 	<script>
 
-		var map = L.map('map').setView([22.61930278145982,91.49742490381592],13);
+		var map = L.map('map',{
+			measureControl: true
+		}).setView([22.61930278145982,91.49742490381592],13);console.log('map ',map);
 		L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 			maxZoom: 17,
 			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map);
-
+		// console.log('L.control.measure().addTo(map) ',L.control.measure());
+		// L.control.measure().addTo(map);
 		/* adding image part */
 			
 
@@ -91,23 +101,26 @@
 				interactive: true
 			}).addTo(map); */
 		/*  */
-
+			console.log('map on ',L.control);
 		var drawnItems = new L.FeatureGroup();
 		map.addLayer(drawnItems);
 		var drawControl = new L.Control.Draw({
 			// position: 'topright',
 			draw: {
 				polygon: {
+					showArea: true,
+					showLength: true,
 					shapeOptions: {
 						color: 'purple',
 						weight: 2,
 						opacity: 0.5,
 					},
 					// allowIntersection: false,
-					drawError: {
+					/* drawError: {
 						color: 'orange',
 						timeout: 1000
-					},
+					}, */
+						
 				},
 				polyline: {
 					icon: new L.DivIcon({
@@ -141,8 +154,10 @@
 				},
 				rect: {
 					shapeOptions: {
-						color: 'green'
+						color: 'green',
+						showArea: true,
 					},
+					metric: true 
 				},
 				circle: {
 					shapeOptions: {
@@ -421,6 +436,7 @@
 			});
 
 			L.DomEvent.on(map.getContainer(), "click", function (e) {
+				// console.log('clicked ',L.control.measure());
 				/* console.log('e.originalEvent.wheelDelta  ',e);
 				console.log("zoom", map.getZoom()) */
 				// zoomBalance()
