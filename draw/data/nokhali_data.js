@@ -3064,6 +3064,22 @@ var noakhaliData={
         "FolderPath": "Char_Ramjan_Sheet_2/Polygon",
         "Clamped": -1
       }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": 1665315521, "customDraw": true },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [91.291376, 22.713421],
+            [91.29231, 22.713421],
+            [91.292213, 22.712372],
+            [91.291301, 22.712342],
+            [91.291376, 22.713421]
+          ]
+        ]
+      }
     }
   ]
 }

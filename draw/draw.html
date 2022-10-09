@@ -339,11 +339,14 @@
 			var data = drawnItems.toGeoJSON();
 			console.log('draw data ', data);
 			data['features'].forEach(draftData => {
-				console.log('data ', draftData['geometry']['type']);
+				// console.log('draftDatadata ', draftData['properties']);
+				draftData['properties'].id=(Date.parse(new Date().toLocaleString())/1000)+Math.floor(Math.random() * 100)
+				draftData['properties'].customDraw=true;
+				console.log('draftDatadata ', draftData['properties']);
 				if (draftData['geometry']['type'] === 'Polygon') {
-					console.log('data is polygon ', draftData['geometry']);
+					// console.log('data is polygon ', draftData['geometry']);
 				} else if (draftData['geometry']['type'] === 'LineString') {
-					console.log('data is line  ', draftData['geometry']);
+					// console.log('data is line  ', draftData['geometry']);
 					lineData = turf.lineString(draftData['geometry']['coordinates']);
 					polyGonData = turf.lineToPolygon(lineData);
 					addToMapData = [polyGonData];
@@ -398,11 +401,24 @@
 
 		var openLayer;
 		function addPopup(layer) {
-			let popupContent =
+			// console.log('in layer ',layer);
+			let layerId=layer['feature']['properties']['id'];
+			let popupContent='';
+			if(layer['feature']['properties'].hasOwnProperty('customDraw')){
+				 popupContent =
+				'<form>' +
+				'Dag no:<br><input type="text" id="input_dag"><br>' +
+				'Area:<br><input type="text" id="input_area"><br>' +
+				'<br><br><a href="#" id="delete_polygon" onclick="deleteFunction(this)" data-id='+layerId+' style="margin-top:50px; margin-right:155px">Delete<br>' +
+				'</form>';
+			}else{
+				 popupContent =
 				'<form>' +
 				'Dag no:<br><input type="text" id="input_dag"><br>' +
 				'Area:<br><input type="text" id="input_area"><br>' +
 				'</form>';
+			}
+			
 
 			layer.bindPopup(popupContent);
 
@@ -427,6 +443,7 @@
 
 		L.DomEvent.on(document, "keyup", function () {
 			if (openLayer) {
+				console.log('openLayer ',openLayer['feature']['properties'].hasOwnProperty('customDrawing'));
 				dag = document.getElementById("input_dag").value;
 				area = document.getElementById("input_area").value;
 
@@ -484,6 +501,22 @@
 
 			}
 		}
+
+		
+		function deleteFunction(e) { 
+			console.log('clicked in delete ',e.getAttribute('data-id'));
+			console.log('features ',noakhaliData);
+			var searcData=noakhaliData['features'].findIndex((data)=>data.properties.id==e.getAttribute('data-id'))
+			console.log('searcData ',noakhaliData['features'].splice(searcData,1));
+			console.log('after ',noakhaliData['features']);
+		 }
+		if(document.getElementById('delete_polygon')){
+			console.log('document.getElementById ',document.getElementById('delete_polygon'));
+			document.getElementById('delete_polygon').onclick =(e)=>{
+			
+		}
+		}
+		
 
 		/*  */
 
