@@ -28,11 +28,12 @@
 		width: 12%;
 		height: 4%;
 	}
-	#export{
+
+	#export {
 		top: 88px;
 	}
-	
-	#save_changes{
+
+	#save_changes {
 		position: absolute;
 		top: 125px;
 		right: 10px;
@@ -51,35 +52,39 @@
 	}
 
 	.text-labels {
-            font-size: 0.5rem;
-            font-weight: 700;
-            color: red;
-            /* Use color, background, set margins for offset, etc */
-        }
-		.leaflet-right{
-			right: 1600px;
-		}
+		font-size: 0.5rem;
+		font-weight: 700;
+		color: red;
+		/* Use color, background, set margins for offset, etc */
+	}
+
+	.leaflet-right {
+		right: 1600px;
+	}
 </style>
+
 <body>
 	<div id="map" , style="width: 200vw; height:200vh"></div>
-		<div id='delete'>Delete Features</div>
-		<a href='#' id='export'>Save Features</a>
-		<a href='#' id='save_changes'>Save Dag information</a>
+	<div id='delete'>Delete Features</div>
+	<a href='#' id='export'>Save Features</a>
+	<a href='#' id='save_changes'>Save Dag information</a>
 
 	<script type="text/javascript" src="lib/leaflet.js"></script>
 	<script src="./lib/leaflet-measure.js"></script>
 
 	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script> -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js" integrity="sha512-ozq8xQKq6urvuU6jNgkfqAmT7jKN2XumbrX1JiB3TnF7tI48DPI4Gy1GXKD/V3EExgAs1V+pRO7vwtS1LHg0Gw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"
+		integrity="sha512-ozq8xQKq6urvuU6jNgkfqAmT7jKN2XumbrX1JiB3TnF7tI48DPI4Gy1GXKD/V3EExgAs1V+pRO7vwtS1LHg0Gw=="
+		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="/draw/data/saved_data.js"></script>
 	<script src="/draw/data/nokhali_data.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
 
 	<script>
 
-		var map = L.map('map',{
+		var map = L.map('map', {
 			measureControl: true
-		}).setView([22.61930278145982,91.49742490381592],13);console.log('map ',map);
+		}).setView([22.61930278145982, 91.49742490381592], 13); console.log('map ', map);
 		L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 			maxZoom: 17,
 			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -87,21 +92,21 @@
 		// console.log('L.control.measure().addTo(map) ',L.control.measure());
 		// L.control.measure().addTo(map);
 		/* adding image part */
-			
 
-			/* var imageUrl = './img/raw_image_png.png';
-			var errorOverlayUrl = 'https://cdn-icons-png.flaticon.com/512/110/110686.png';
-			var altText = 'Image of Newark, N.J. in 1922. Source: The University of Texas at Austin, UT Libraries Map Collection.';
-			var latLngBounds = L.latLngBounds([[22.71579992100004, 91.28839667900007], [22.705118411000058, 91.29540041800004]]);
 
-			var imageOverlay = L.imageOverlay(imageUrl, latLngBounds, {
-				opacity: 0.8,
-				errorOverlayUrl: errorOverlayUrl,
-				alt: altText,
-				interactive: true
-			}).addTo(map); */
+		/* var imageUrl = './img/raw_image_png.png';
+		var errorOverlayUrl = 'https://cdn-icons-png.flaticon.com/512/110/110686.png';
+		var altText = 'Image of Newark, N.J. in 1922. Source: The University of Texas at Austin, UT Libraries Map Collection.';
+		var latLngBounds = L.latLngBounds([[22.71579992100004, 91.28839667900007], [22.705118411000058, 91.29540041800004]]);
+
+		var imageOverlay = L.imageOverlay(imageUrl, latLngBounds, {
+			opacity: 0.8,
+			errorOverlayUrl: errorOverlayUrl,
+			alt: altText,
+			interactive: true
+		}).addTo(map); */
 		/*  */
-			console.log('map on ',L.control);
+
 		var drawnItems = new L.FeatureGroup();
 		map.addLayer(drawnItems);
 		var drawControl = new L.Control.Draw({
@@ -120,7 +125,7 @@
 						color: 'orange',
 						timeout: 1000
 					}, */
-						
+
 				},
 				polyline: {
 					icon: new L.DivIcon({
@@ -157,7 +162,7 @@
 						color: 'green',
 						showArea: true,
 					},
-					metric: true 
+					metric: true
 				},
 				circle: {
 					shapeOptions: {
@@ -177,37 +182,37 @@
 			drawnItems.addLayer(layer);
 		});
 		// console.log('savedData ',savedData['features'][0]['geometry']['coordinates']);
-			// console.log('savedData ', savedData['features']);
-			var count=0;
-			var lineData='';
-			var polyGonData='';
-			var addToMapData=[];
+		// console.log('savedData ', savedData['features']);
+		var count = 0;
+		var lineData = '';
+		var polyGonData = '';
+		var addToMapData = [];
 
-			/* savedData['features'].forEach(data => {
-					// console.log('data ', data['geometry']['coordinates']);
-					lineData = turf.lineString(data['geometry']['coordinates']);
-					polyGonData = turf.lineToPolygon(lineData);
-					addToMapData = [polyGonData];
-					// console.log(addToMapData);
-					savedData['features'][count] = addToMapData[0];
+		/* savedData['features'].forEach(data => {
+				// console.log('data ', data['geometry']['coordinates']);
+				lineData = turf.lineString(data['geometry']['coordinates']);
+				polyGonData = turf.lineToPolygon(lineData);
+				addToMapData = [polyGonData];
+				// console.log(addToMapData);
+				savedData['features'][count] = addToMapData[0];
 
-					lineData = '';
-					polyGonData = '';
-					addToMapData = [];
-					count++;
+				lineData = '';
+				polyGonData = '';
+				addToMapData = [];
+				count++;
 
-				}); */
-				// Main code
-			/* var line = turf.lineString(savedData['features'][0]['geometry']['coordinates']);
+			}); */
+		// Main code
+		/* var line = turf.lineString(savedData['features'][0]['geometry']['coordinates']);
 
-			var polygon = turf.lineToPolygon(line);
+		var polygon = turf.lineToPolygon(line);
 
-			//addToMap
-			var addToMap = [polygon];
-			console.log('addToMap ', addToMap[0]);
-			savedData['features'][0] = addToMap[0]; */
-			
-		
+		//addToMap
+		var addToMap = [polygon];
+		console.log('addToMap ', addToMap[0]);
+		savedData['features'][0] = addToMap[0]; */
+
+
 		var linedata = L.geoJSON(noakhaliData, {
 			style: function () {
 				return {
@@ -219,25 +224,25 @@
 					click: zoomToFeature
 				});
 				// console.log('lat ',map.getBounds()['_northEast']['lat'],' lang ',map.getBounds()['_southWest']['lng']);
-				
-				var bbox=L.latLngBounds(feature.geometry.coordinates.map((c) => {
+
+				var bbox = L.latLngBounds(feature.geometry.coordinates.map((c) => {
 					return [c[1], c[0]];
 				}));
-				
+
 				var center = layer.getBounds().getCenter();
-			
+
 				// console.log(' bbox ',bbox,' center ',center);
 
 				// setCustomMarker(bbox['_northEast']['lat'],bbox['_southWest']['lng']);
 				// setCustomMarker(center['lng'],center['lat']);
-				
 
-				if (feature.properties.hasOwnProperty('dag') && typeof (feature.properties.dag)!=='undefind') {
+
+				if (feature.properties.hasOwnProperty('dag') && typeof (feature.properties.dag) !== 'undefind') {
 					// console.log(' typeof (feature.properties.dag) ',typeof (feature.properties.dag));
-					setCustomMarker(center['lng'],center['lat'],feature.properties.dag);
+					setCustomMarker(center['lng'], center['lat'], feature.properties.dag);
 
 				}
-				
+
 
 				coords = feature.geometry.coordinates;
 				first = coords[0];
@@ -245,7 +250,7 @@
 
 
 				layer.on('click', function (e) {
-					console.log(' area ',L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]),' bounds ',layer.getBounds());
+					console.log(' area ', L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]), ' bounds ', layer.getBounds());
 					// console.log('center ',(layer.getBounds()['_northEast']['lat']+layer.getBounds()['_southWest']['lat']));
 					/* console.log('layer.getLatLngs() ',layer.getLatLngs());
 					
@@ -272,7 +277,7 @@
 						
 					} */
 
-					
+
 					this.setStyle({
 						weight: 5,
 						// color: '#666',
@@ -301,20 +306,20 @@
 				addPopup(layer);
 
 			},
-					
+
 		}).addTo(map);
 
-		function setCustomMarker (lat,lng,content) {  
+		function setCustomMarker(lat, lng, content) {
 			// console.log('lat in ',lat,'lng in',lng);
-			var myTextLabel = L.marker([lng,lat], {
+			var myTextLabel = L.marker([lng, lat], {
 				icon: L.divIcon({
-					className: 'text-labels',   
+					className: 'text-labels',
 					html: content
 				}),
-				zIndexOffset: 1000     
+				zIndexOffset: 1000
 			}).addTo(map);
 		}
-		
+
 		function zoomToFeature(e) {
 			map.fitBounds(e.target.getBounds());
 
@@ -327,27 +332,27 @@
 		document.getElementById('export').onclick = function (e) {
 			// Extract GeoJson from featureGroup
 			var data = drawnItems.toGeoJSON();
-			console.log('draw data ',data);
+			console.log('draw data ', data);
 			data['features'].forEach(draftData => {
-					console.log('data ', draftData['geometry']['type']);
-					if(draftData['geometry']['type'] ==='Polygon'){
-						console.log('data is polygon ', draftData['geometry']);
-					}else if(draftData['geometry']['type'] ==='LineString'){
-						console.log('data is line  ', draftData['geometry']);
-						lineData = turf.lineString(draftData['geometry']['coordinates']);
-						polyGonData = turf.lineToPolygon(lineData);
-						addToMapData = [polyGonData];
-						// console.log(addToMapData);
-						data['features'][count] = addToMapData[0];
+				console.log('data ', draftData['geometry']['type']);
+				if (draftData['geometry']['type'] === 'Polygon') {
+					console.log('data is polygon ', draftData['geometry']);
+				} else if (draftData['geometry']['type'] === 'LineString') {
+					console.log('data is line  ', draftData['geometry']);
+					lineData = turf.lineString(draftData['geometry']['coordinates']);
+					polyGonData = turf.lineToPolygon(lineData);
+					addToMapData = [polyGonData];
+					// console.log(addToMapData);
+					data['features'][count] = addToMapData[0];
 
-						lineData = '';
-						polyGonData = '';
-						addToMapData = [];
-						count++;
-					}
-					
+					lineData = '';
+					polyGonData = '';
+					addToMapData = [];
+					count++;
+				}
 
-				});
+
+			});
 			/* data['features'].forEach(draftData => {
 					// console.log('data ', data['geometry']['coordinates']);
 					lineData = turf.lineString(draftData['geometry']['coordinates']);
@@ -368,17 +373,17 @@
 			// Create export
 			document.getElementById('export').setAttribute('href', 'data:' + convertedData);
 			document.getElementById('export').setAttribute('download', 'data.geojson');
-			
+
 		}
 
 		document.getElementById('save_changes').onclick = function (e) {
 			// Extract GeoJson from featureGroup
 			/* console.log('linedata ',linedata);
 			console.log('savedData ',savedData); */
-			var newSavedData=noakhaliData;
-		
+			var newSavedData = noakhaliData;
+
 			var convertedSavedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(newSavedData));
-			
+
 			document.getElementById('save_changes').setAttribute('href', 'data:' + convertedSavedData);
 			document.getElementById('save_changes').setAttribute('download', 'newSavedData.geojson');
 		}
@@ -386,95 +391,95 @@
 
 		/*  */
 
-			var openLayer;
-			function addPopup(layer) {
-				let popupContent =
-					'<form>' +
-					'Dag no:<br><input type="text" id="input_dag"><br>' +
-					'Area:<br><input type="text" id="input_area"><br>' +
-					'</form>';
+		var openLayer;
+		function addPopup(layer) {
+			let popupContent =
+				'<form>' +
+				'Dag no:<br><input type="text" id="input_dag"><br>' +
+				'Area:<br><input type="text" id="input_area"><br>' +
+				'</form>';
 
-				layer.bindPopup(popupContent);
+			layer.bindPopup(popupContent);
 
-				layer.on("popupopen", function (e) {
-					var _layer = e.popup._source;
-					if (!_layer.feature) {
-						_layer.feature = {
-							properties: {}
-						};
-					}
-					document.getElementById("input_dag").value = _layer.feature.properties.dag || "";
-					document.getElementById("input_area").value = _layer.feature.properties.area || "";
-					document.getElementById("input_dag").focus();
-					openLayer = _layer;
-				});
-
-				layer.on("popupclose", function (e) {
-					openLayer = undefined;
-				})
-
-			};
-
-			L.DomEvent.on(document, "keyup", function () {
-				if (openLayer) {
-					dag = document.getElementById("input_dag").value;
-					area = document.getElementById("input_area").value;
-
-					openLayer.feature.properties.dag = dag;
-					openLayer.feature.properties.area = area;
+			layer.on("popupopen", function (e) {
+				var _layer = e.popup._source;
+				if (!_layer.feature) {
+					_layer.feature = {
+						properties: {}
+					};
 				}
-			})
-
-			var labelData;
-			L.DomEvent.on(map.getContainer(), "mousewheel", function (e) {
-				console.log('e.originalEvent.wheelDelta  ',e.wheelDelta);
-				if (e.wheelDelta) {
-					// console.log('style ',document.getElementsByClassName("text-labels")[0].style);
-					// zoomBalance()
-				} 
-			
+				document.getElementById("input_dag").value = _layer.feature.properties.dag || "";
+				document.getElementById("input_area").value = _layer.feature.properties.area || "";
+				document.getElementById("input_dag").focus();
+				openLayer = _layer;
 			});
 
-			L.DomEvent.on(map.getContainer(), "click", function (e) {
-				// console.log('clicked ',L.control.measure());
-				/* console.log('e.originalEvent.wheelDelta  ',e);
-				console.log("zoom", map.getZoom()) */
-				// zoomBalance()
-			
-			})
-			// console.log(document.getElementsByClassName('leaflet-control-zoom-in')[0]);
-			document.getElementsByClassName('leaflet-control-zoom-in')[0].addEventListener('click',(e)=>{
-				// zoomBalance()
+			layer.on("popupclose", function (e) {
+				openLayer = undefined;
 			})
 
-			document.getElementsByClassName('leaflet-control-zoom-out')[0].addEventListener('click',(e)=>{
+		};
+
+		L.DomEvent.on(document, "keyup", function () {
+			if (openLayer) {
+				dag = document.getElementById("input_dag").value;
+				area = document.getElementById("input_area").value;
+
+				openLayer.feature.properties.dag = dag;
+				openLayer.feature.properties.area = area;
+			}
+		})
+
+		var labelData;
+		L.DomEvent.on(map.getContainer(), "mousewheel", function (e) {
+			console.log('e.originalEvent.wheelDelta  ', e.wheelDelta);
+			if (e.wheelDelta) {
+				// console.log('style ',document.getElementsByClassName("text-labels")[0].style);
 				// zoomBalance()
-			})
+			}
 
-			// setInterval(zoomBalance,1000);
+		});
 
-			function zoomBalance() {
+		L.DomEvent.on(map.getContainer(), "click", function (e) {
+			// console.log('clicked ',L.control.measure());
+			/* console.log('e.originalEvent.wheelDelta  ',e);
+			console.log("zoom", map.getZoom()) */
+			// zoomBalance()
 
-					 labelData=document.getElementsByClassName("text-labels");
-					let zoomData=map.getZoom();
-					console.log('typeof ',labelData.length);
-					console.log("zoom", map.getZoom())
-					for (let i = 0; i < labelData.length; i++) {
-						let element = labelData[i];
-						if(zoomData<=13){
-							element.style['fontSize']='2px';
-						}else if(zoomData>=14){
-							if(zoomData>=14 && zoomData<18){
-								element.style['fontSize']='1em';
-							}else{
-								element.style['fontSize']='2em';
-							}
-							// element.style['fontSize']='2em';
-						}
-						
+		})
+		// console.log(document.getElementsByClassName('leaflet-control-zoom-in')[0]);
+		document.getElementsByClassName('leaflet-control-zoom-in')[0].addEventListener('click', (e) => {
+			// zoomBalance()
+		})
+
+		document.getElementsByClassName('leaflet-control-zoom-out')[0].addEventListener('click', (e) => {
+			// zoomBalance()
+		})
+
+		// setInterval(zoomBalance,1000);
+
+		function zoomBalance() {
+
+			labelData = document.getElementsByClassName("text-labels");
+			let zoomData = map.getZoom();
+			console.log('typeof ', labelData.length);
+			console.log("zoom", map.getZoom())
+			for (let i = 0; i < labelData.length; i++) {
+				let element = labelData[i];
+				if (zoomData <= 13) {
+					element.style['fontSize'] = '2px';
+				} else if (zoomData >= 14) {
+					if (zoomData >= 14 && zoomData < 18) {
+						element.style['fontSize'] = '1em';
+					} else {
+						element.style['fontSize'] = '2em';
 					}
-			  }
-			
+					// element.style['fontSize']='2em';
+				}
+
+			}
+		}
+
 		/*  */
 
 	</script>
