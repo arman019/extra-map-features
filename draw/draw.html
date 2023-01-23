@@ -78,13 +78,14 @@
 		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="/draw/data/saved_data.js"></script>
 	<script src="/draw/data/nokhali_data.js"></script>
+	<script src="/draw/data/itbaria_data.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
 
 	<script>
 
 		var map = L.map('map', {
 			measureControl: true
-		}).setView([22.61930278145982, 91.49742490381592], 13); console.log('map ', map);
+		}).setView([22.3588, 90.3452], 13); console.log('map ', map);
 		L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 			maxZoom: 17,
 			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -218,7 +219,7 @@
 		savedData['features'][0] = addToMap[0]; */
 
 
-		var linedata = L.geoJSON(noakhaliData, {
+		var linedata = L.geoJSON(itbariaData, {
 			style: function () {
 				return {
 					color: 'yellow',
